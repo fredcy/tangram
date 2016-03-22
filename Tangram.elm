@@ -1,4 +1,7 @@
 import Window
+import Color exposing (Color, rgb)
+import Graphics.Collage exposing (Form, collage, filled, polygon, scale)
+import Graphics.Element exposing (Element)
 
 --colors
 elmGreen     : Color
@@ -17,10 +20,10 @@ elmGray      = rgb 90 99 120
 scalingFactor : (Int, Int) -> Float
 scalingFactor (width, height) = (min (toFloat width) (toFloat height)) / 3
 
-filledForm : Float -> Color -> [(Float, Float)] -> Form
+filledForm : Float -> Color -> List  (Float, Float) -> Form
 filledForm scaleFactor color points = scale scaleFactor (filled color (polygon points))
 
-logo : Float -> [Form]
+logo : Float -> List Form
 logo scaleFactor = [
                     (filledForm scaleFactor elmTurquoise [(0, 0),  (-1, -1),   (1, -1)                 ]),
                     (filledForm scaleFactor elmGray      [(0, 0),  (-1, -1),   (-1, 1)                 ]),
@@ -32,14 +35,14 @@ logo scaleFactor = [
                    ]
 
 --functions
-displayCentered : (Int, Int) -> [Form] -> Element
+displayCentered : (Int, Int) -> List Form -> Element
 displayCentered (width, height) forms = collage width height forms
 
 updatedScalingFactor : Signal Float
-updatedScalingFactor = (lift scalingFactor Window.dimensions)
+updatedScalingFactor = (Signal.map scalingFactor Window.dimensions)
 
-scaledLogo : Signal [Form]
-scaledLogo = (lift logo updatedScalingFactor)
+scaledLogo : Signal (List Form)
+scaledLogo = (Signal.map logo updatedScalingFactor)
 
 main : Signal Element
-main = lift2 displayCentered Window.dimensions scaledLogo
+main = Signal.map2 displayCentered Window.dimensions scaledLogo
