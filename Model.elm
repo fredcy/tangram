@@ -31,7 +31,7 @@ type alias Tangram =
 
 type alias Model =
   { dimensions : ( Int, Int )
-  , pieces : Tangram
+  , tangram : Tangram
   , animation : Animation
   }
 
@@ -39,7 +39,7 @@ type alias Model =
 type Animation
   = AnimationIdle
   | AnimationStarting Time
-  | AnimationActive { duration : Time, startTime : Time, startPieces : Tangram }
+  | AnimationActive { duration : Time, startTime : Time, startTangram : Tangram }
 
 
 initTangram =
