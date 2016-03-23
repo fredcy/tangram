@@ -1,4 +1,4 @@
-SRC = Tangram.elm Model.elm View.elm Update.elm Colors.elm
+SRC = Tangram.elm Model.elm View.elm Update.elm Colors.elm Start.elm
 
 build:
 	elm make Tangram.elm

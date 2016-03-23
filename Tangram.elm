@@ -6,18 +6,26 @@ import Model exposing (Model, init)
 import Signal.Extra
 import View exposing (view)
 import Update exposing (..)
+import Task
+import Effects
+import Start exposing (start, Config, App)
 
 
 main : Signal Element
 main =
-  Signal.map view model
+  app.output
 
 
-actionSignal : Signal Action
-actionSignal =
+dimensionSignal : Signal Action
+dimensionSignal =
   Signal.map UpdateDimensions Window.dimensions
 
 
-model : Signal Model
-model =
-  Signal.Extra.foldp' update (\d -> update d init) actionSignal
+app =
+  start
+    { init = (Model.init, Effects.none)
+    , update = update
+    , view = view
+    , inputs = [ dimensionSignal ]
+    }
+

@@ -7,8 +7,8 @@ import Graphics.Element exposing (Element)
 import Model exposing (..)
 
 
-view : Model -> Element
-view model =
+view : Signal.Address action -> Model -> Element
+view address model =
   let
     form =
       group
@@ -21,14 +21,11 @@ view model =
         , formFromPiece model.smallTriangleN
         ]
         |> scale (scalingFactor model.dimensions)
-    (width, height) = model.dimensions
+
+    ( width, height ) =
+      model.dimensions
   in
     collage width height [ form ]
-
-
-displayCentered : ( Int, Int ) -> Form -> Element
-displayCentered ( width, height ) form =
-  collage width height [ form ]
 
 
 formFromPiece : Piece -> Form
