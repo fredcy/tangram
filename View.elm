@@ -13,13 +13,13 @@ view address model =
   let
     form =
       group
-        [ formFromPiece model.bigTriangleS
-        , formFromPiece model.bigTriangleW
-        , formFromPiece model.mediumTriangle
-        , formFromPiece model.smallTriangleSE
-        , formFromPiece model.square
-        , formFromPiece model.parallelogram
-        , formFromPiece model.smallTriangleN
+        [ formFromPiece model.pieces.bigTriangleS
+        , formFromPiece model.pieces.bigTriangleW
+        , formFromPiece model.pieces.mediumTriangle
+        , formFromPiece model.pieces.smallTriangleSE
+        , formFromPiece model.pieces.smallTriangleN
+        , formFromPiece model.pieces.parallelogram
+        , formFromPiece model.pieces.square
         ]
         |> scale (scalingFactor model.dimensions)
 

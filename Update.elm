@@ -19,9 +19,14 @@ update action model =
       ( { model | dimensions = dimensions }, Effects.none )
 
     Click ->
-      ( { model | animation = AnimationStarting 1000 }
-      , Effects.tick Tick
-      )
+      case model.animation of
+        AnimationIdle ->
+          ( { model | animation = AnimationStarting 1000 }
+          , Effects.tick Tick
+          )
+
+        _ ->
+          ( model, Effects.none )
 
     Tick time ->
       case model.animation of
@@ -33,22 +38,23 @@ update action model =
             animation =
               AnimationActive
                 { duration = duration
-                , start = time
+                , startTime = time
+                , startPieces = model.pieces
                 }
           in
             ( { model | animation = animation }, Effects.tick Tick )
 
-        AnimationActive { duration, start } ->
+        AnimationActive { duration, startTime, startPieces } ->
           let
             fraction =
-              (time - start) / duration
+              (time - startTime) / duration
           in
             if fraction >= 1.0 then
-              ( { model | animation = AnimationIdle } |> animate 1
+              ( { model | animation = AnimationIdle } |> animate 1 startPieces
               , Effects.none
               )
             else
-              ( model |> animate fraction
+              ( model |> animate fraction startPieces
               , Effects.tick Tick
               )
 
@@ -56,13 +62,71 @@ update action model =
       ( model, Effects.none )
 
 
-animate : Float -> Model -> Model
-animate fraction model =
+animate : Float -> Tangram -> Model -> Model
+animate fraction startPieces model =
   let
+    travel =
+      0.4
+
     square =
-      model.square
+      startPieces.square
 
     square' =
-      { square | rotation = fraction * (degrees 90) }
+      { square | rotation = startPieces.square.rotation + fraction * (degrees 90) }
+
+    medTri =
+      startPieces.mediumTriangle
+
+    medTri' =
+      { medTri | position = moveOutBack ( travel, travel ) fraction medTri.position }
+
+    smTri =
+      startPieces.smallTriangleSE
+
+    smTri' =
+      { smTri | position = moveOutBack ( travel, -travel ) fraction smTri.position }
+
+    bigTri =
+      startPieces.bigTriangleS
+
+    bigTri' =
+      { bigTri | position = moveOutBack ( -travel, -travel ) fraction bigTri.position }
+
+    par =
+      startPieces.parallelogram
+
+    par' =
+      { par | position = moveOutBack ( -travel, travel ) fraction par.position }
+
+    smTri2 =
+      startPieces.smallTriangleN
+
+    smTri2' =
+      { smTri2 | position = moveOutBack ( -travel, travel ) fraction smTri2.position }
+
+    pieces =
+      model.pieces
+
+    pieces' =
+      { pieces
+        | square = square'
+        , mediumTriangle = medTri'
+        , smallTriangleSE = smTri'
+        , bigTriangleS = bigTri'
+        , parallelogram = par'
+        , smallTriangleN = smTri2'
+      }
   in
-    { model | square = square' }
+    { model | pieces = pieces' }
+
+
+moveOutBack : ( Float, Float ) -> Float -> ( Float, Float ) -> ( Float, Float )
+moveOutBack ( dx, dy ) fraction ( px, py ) =
+  let
+    fraction' =
+      if fraction < 0.5 then
+        fraction
+      else
+        1 - fraction
+  in
+    ( px + fraction' * dx, py + fraction' * dy )

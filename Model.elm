@@ -5,6 +5,8 @@ import Colors exposing (..)
 import Time exposing (Time)
 
 
+type alias Position = (Float, Float)
+
 type alias Piece =
   { points : List ( Float, Float )
   , position : ( Float, Float )
@@ -14,15 +16,20 @@ type alias Piece =
   }
 
 
-type alias Model =
-  { dimensions : ( Int, Int )
-  , bigTriangleS : Piece
+type alias Tangram =
+  { bigTriangleS : Piece
   , bigTriangleW : Piece
   , mediumTriangle : Piece
   , smallTriangleSE : Piece
   , smallTriangleN : Piece
   , square : Piece
   , parallelogram : Piece
+  }
+
+
+type alias Model =
+  { dimensions : ( Int, Int )
+  , pieces : Tangram
   , animation : Animation
   }
 
@@ -30,13 +37,11 @@ type alias Model =
 type Animation
   = AnimationIdle
   | AnimationStarting Time
-  | AnimationActive { duration : Time, start : Time }
+  | AnimationActive { duration : Time, startTime : Time, startPieces : Tangram }
 
 
-init : Model
-init =
-  Model
-    ( 200, 200 )
+initTangram =
+  Tangram
     (Piece trianglePoints ( 0, -0.5 ) 0 elmTurquoise 1)
     (Piece trianglePoints ( -0.5, 0 ) (degrees -90) elmGray 1)
     (Piece trianglePoints ( 0.75, 0.75 ) (degrees -45) elmTurquoise (1 / sqrt 2))
@@ -44,6 +49,13 @@ init =
     (Piece trianglePoints ( 0, 0.25 ) (degrees 180) elmOrange 0.5)
     (Piece squarePoints ( 0.5, 0 ) 0 elmGreen 1)
     (Piece parallelogramPoints ( 0, 0 ) 0 elmGreen 1)
+
+
+init : Model
+init =
+  Model
+    ( 200, 200 )
+    initTangram
     AnimationIdle
 
 
