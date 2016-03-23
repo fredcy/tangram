@@ -2,7 +2,7 @@ module Main (..) where
 
 import Window
 import Color exposing (Color, rgb)
-import Graphics.Collage exposing (Form, collage, defaultLine, filled, group, move, outlined, path, polygon, scale, solid, traced)
+import Graphics.Collage exposing (..)
 import Graphics.Element exposing (Element)
 import Colors exposing (..)
 
@@ -55,19 +55,71 @@ logo scaleFactor =
     |> scale scaleFactor
 
 
+view : Model -> Form
+view model =
+  group
+    [ formFromPiece model.bigTriangleS
+    , formFromPiece model.bigTriangleW
+    ]
+    |> scale (scalingFactor model.dimensions)
+
+
+formFromPiece : Piece -> Form
+formFromPiece piece =
+  filledForm piece.color piece.points
+    |> move piece.position
+    |> rotate piece.rotation
+    |> scale piece.scale
+
+
+type alias Model =
+  { dimensions : (Int, Int)
+  , bigTriangleS : Piece
+  , bigTriangleW : Piece
+  }
+
+
+type alias Piece =
+  { points : List ( Float, Float )
+  , position : ( Float, Float )
+  , rotation : Float
+  , color : Color
+  , scale : Float
+  }
+
+
+init : Model
+init =
+  Model
+    (200, 200)
+    (Piece trianglePoints ( 0, -0.5 ) 0 elmTurquoise 1)
+    (Piece trianglePoints ( -0.5, 0 ) (degrees -90) elmGray 1)
+
+
+trianglePoints : List ( number, Float )
+trianglePoints =
+  [ ( 0, 0.5 ), ( -1, -0.5 ), ( 1, -0.5 ) ]
+
+
 bigTriangleTurquoise : Form
 bigTriangleTurquoise =
-  filledForm elmTurquoise [ ( 0, 0 ), ( -1, -1 ), ( 1, -1 ) ]
+  filledForm elmTurquoise trianglePoints
+    |> moveY -0.5
 
 
 bigTriangleGray : Form
 bigTriangleGray =
-  filledForm elmGray [ ( 0, 0 ), ( -1, -1 ), ( -1, 1 ) ]
+  filledForm elmGray trianglePoints
+    |> rotate (degrees (-90))
+    |> moveX -0.5
 
 
 mediumTriangle : Form
 mediumTriangle =
-  filledForm elmTurquoise [ ( 1, 1 ), ( 0, 1 ), ( 1, 0 ) ]
+  filledForm elmTurquoise trianglePoints
+    |> scale (1 / sqrt 2)
+    |> rotate (degrees -45)
+    |> move ( 0.75, 0.75 )
 
 
 smallTriangleSE : Form
@@ -90,6 +142,21 @@ parallelogram =
   filledForm elmGreen [ ( 0, 1 ), ( -1, 1 ), ( -0.5, 0.5 ), ( 0.5, 0.5 ) ]
 
 
+type Action
+  = NoOp
+  | UpdateDimensions (Int, Int)
+
+
+update : Action -> Model -> Model
+update action model =
+  case action of
+    UpdateDimensions dimensions ->
+      { model | dimensions = dimensions }
+
+    NoOp ->
+      model
+
+
 
 --functions
 
@@ -106,7 +173,17 @@ updatedScalingFactor =
 
 scaledLogo : Signal Form
 scaledLogo =
-  (Signal.map logo updatedScalingFactor)
+  Signal.map view model
+
+
+actionSignal : Signal Action
+actionSignal =
+  Signal.map UpdateDimensions Window.dimensions
+
+
+model : Signal Model
+model =
+  Signal.foldp update init actionSignal
 
 
 main : Signal Element
