@@ -2,6 +2,7 @@ module Start (..) where
 
 import Task
 import Effects exposing (Effects, Never)
+import Signal.Extra
 
 
 type alias Config model action output =

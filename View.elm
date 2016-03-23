@@ -4,10 +4,11 @@ import Color exposing (Color)
 import Colors exposing (..)
 import Graphics.Collage exposing (..)
 import Graphics.Element exposing (Element)
+import Graphics.Input exposing (clickable)
 import Model exposing (..)
+import Update exposing (Action(..))
 
-
-view : Signal.Address action -> Model -> Element
+view : Signal.Address Action -> Model -> Element
 view address model =
   let
     form =
@@ -26,6 +27,7 @@ view address model =
       model.dimensions
   in
     collage width height [ form ]
+      |> clickable (Signal.message address Click)
 
 
 formFromPiece : Piece -> Form

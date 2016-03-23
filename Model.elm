@@ -2,6 +2,7 @@ module Model (..) where
 
 import Color exposing (Color, rgb)
 import Colors exposing (..)
+import Time exposing (Time)
 
 
 type alias Piece =
@@ -22,7 +23,14 @@ type alias Model =
   , smallTriangleN : Piece
   , square : Piece
   , parallelogram : Piece
+  , animation : Animation
   }
+
+
+type Animation
+  = AnimationIdle
+  | AnimationStarting Time
+  | AnimationActive { duration : Time, start : Time }
 
 
 init : Model
@@ -36,6 +44,7 @@ init =
     (Piece trianglePoints ( 0, 0.25 ) (degrees 180) elmOrange 0.5)
     (Piece squarePoints ( 0.5, 0 ) 0 elmGreen 1)
     (Piece parallelogramPoints ( 0, 0 ) 0 elmGreen 1)
+    AnimationIdle
 
 
 trianglePoints : List ( number, Float )
