@@ -14,7 +14,7 @@ type Action
 
 update : Action -> Model -> ( Model, Effects Action )
 update action model =
-  case action |> Debug.log "action" of
+  case action of
     UpdateDimensions dimensions ->
       ( { model | dimensions = dimensions }, Effects.none )
 
@@ -50,11 +50,11 @@ update action model =
               (time - startTime) / duration
           in
             if fraction >= 1.0 then
-              ( { model | animation = AnimationIdle } |> animate 1 startPieces
+              ( { model | animation = AnimationIdle } |> makePerson 1 startPieces
               , Effects.none
               )
             else
-              ( model |> animate fraction startPieces
+              ( model |> makePerson fraction startPieces
               , Effects.tick Tick
               )
 
@@ -66,7 +66,7 @@ animate : Float -> Tangram -> Model -> Model
 animate fraction startPieces model =
   let
     travel =
-      0.4
+      0.35
 
     square =
       startPieces.square
@@ -130,3 +130,61 @@ moveOutBack ( dx, dy ) fraction ( px, py ) =
         1 - fraction
   in
     ( px + fraction' * dx, py + fraction' * dy )
+
+
+moveBy : Position -> Float -> Position -> Position
+moveBy ( dx, dy ) fraction ( px, py ) =
+  ( px + fraction * dx, py + fraction * dy )
+
+
+makePerson : Float -> Tangram -> Model -> Model
+makePerson fraction tangram model =
+  let
+    bigTriangleS' =
+      modify tangram.bigTriangleS (0, 0.25) 0 fraction
+
+    bigTriangleW' =
+      modify tangram.bigTriangleW (1, 0.25) -90 fraction
+
+    mediumTriangle' =
+      modify tangram.mediumTriangle (0, -1.75) 0 fraction
+
+    smTri1 =
+      modify tangram.smallTriangleSE ( 0, -1.25 ) 45 fraction
+
+    smTri2 =
+      modify tangram.smallTriangleN (-1.75, -1.5) -135 fraction
+
+    square' =
+      modify tangram.square ( 0, 1.25 ) 0 fraction
+
+    parallelogram' =
+      modify tangram.parallelogram (-0.7, -1.85) 45 fraction
+
+    pieces =
+      { tangram
+        | smallTriangleSE = smTri1
+        , smallTriangleN = smTri2
+        , square = square'
+        , mediumTriangle = mediumTriangle'
+        , parallelogram = parallelogram'
+        , bigTriangleS = bigTriangleS'
+        , bigTriangleW = bigTriangleW'
+      }
+  in
+    { model | pieces = pieces }
+
+
+modify : Piece -> Position -> Rotation -> Float -> Piece
+modify basePiece ( dx, dy ) dRotation fraction =
+  let
+    ( px, py ) =
+      basePiece.position
+
+    position' =
+      ( px + fraction * dx, py + fraction * dy )
+
+    rotation' =
+      basePiece.rotation + fraction * (degrees dRotation)
+  in
+    { basePiece | position = position', rotation = rotation' }

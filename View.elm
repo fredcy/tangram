@@ -40,7 +40,7 @@ formFromPiece piece =
 
 scalingFactor : ( Int, Int ) -> Float
 scalingFactor ( width, height ) =
-  (min (toFloat width) (toFloat height)) / 3
+  (min (toFloat width) (toFloat height)) / 4
 
 
 filledForm : Color -> List ( Float, Float ) -> Form

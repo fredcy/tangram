@@ -7,10 +7,12 @@ import Time exposing (Time)
 
 type alias Position = (Float, Float)
 
+type alias Rotation = Float
+
 type alias Piece =
-  { points : List ( Float, Float )
-  , position : ( Float, Float )
-  , rotation : Float
+  { points : List Position
+  , position : Position
+  , rotation : Rotation
   , color : Color
   , scale : Float
   }
@@ -48,7 +50,7 @@ initTangram =
     (Piece trianglePoints ( 0.75, -0.5 ) (degrees 90) elmOrange 0.5)
     (Piece trianglePoints ( 0, 0.25 ) (degrees 180) elmOrange 0.5)
     (Piece squarePoints ( 0.5, 0 ) 0 elmGreen 1)
-    (Piece parallelogramPoints ( 0, 0 ) 0 elmGreen 1)
+    (Piece parallelogramPoints ( -0.25, 0.75 ) 0 elmGreen 1)
 
 
 init : Model
@@ -66,9 +68,10 @@ trianglePoints =
 
 squarePoints : List ( Float, Float )
 squarePoints =
-  [ ( 0.5, 0 ), ( 0, 0.5 ), ( -0.5, 0 ), ( 0, -0.5 ) ]
+  [ ( 0.5, 0 ), ( 0, 0.5 ), ( -0.5, -0 ), ( 0, -0.5 ) ]
 
 
 parallelogramPoints : List ( Float, Float )
 parallelogramPoints =
-  [ ( 0, 1 ), ( -1, 1 ), ( -0.5, 0.5 ), ( 0.5, 0.5 ) ]
+  --[ ( 0, 1 ), ( -1, 1 ), ( -0.5, 0.5 ), ( 0.5, 0.5 ) ]
+  [ ( 0.25, 0.25 ), ( -0.75, 0.25 ), ( -0.25, -0.25 ), ( 0.75, -0.25 ) ]
