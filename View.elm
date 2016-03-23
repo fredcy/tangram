@@ -7,18 +7,28 @@ import Graphics.Element exposing (Element)
 import Model exposing (..)
 
 
-view : Model -> Form
+view : Model -> Element
 view model =
-  group
-    [ formFromPiece model.bigTriangleS
-    , formFromPiece model.bigTriangleW
-    , formFromPiece model.mediumTriangle
-    , formFromPiece model.smallTriangleSE
-    , formFromPiece model.square
-    , formFromPiece model.parallelogram
-    , formFromPiece model.smallTriangleN
-    ]
-    |> scale (scalingFactor model.dimensions)
+  let
+    form =
+      group
+        [ formFromPiece model.bigTriangleS
+        , formFromPiece model.bigTriangleW
+        , formFromPiece model.mediumTriangle
+        , formFromPiece model.smallTriangleSE
+        , formFromPiece model.square
+        , formFromPiece model.parallelogram
+        , formFromPiece model.smallTriangleN
+        ]
+        |> scale (scalingFactor model.dimensions)
+    (width, height) = model.dimensions
+  in
+    collage width height [ form ]
+
+
+displayCentered : ( Int, Int ) -> Form -> Element
+displayCentered ( width, height ) form =
+  collage width height [ form ]
 
 
 formFromPiece : Piece -> Form
@@ -62,8 +72,3 @@ filledForm color points =
 separation : Float
 separation =
   5.0e-2
-
-
-displayCentered : ( Int, Int ) -> Form -> Element
-displayCentered ( width, height ) form =
-  collage width height [ form ]
