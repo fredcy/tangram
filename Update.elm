@@ -1,5 +1,6 @@
 module Update (Action(..), update) where
 
+import Easing
 import Effects exposing (Effects)
 import Model exposing (..)
 import Time exposing (Time)
@@ -132,34 +133,29 @@ moveOutBack ( dx, dy ) fraction ( px, py ) =
     ( px + fraction' * dx, py + fraction' * dy )
 
 
-moveBy : Position -> Float -> Position -> Position
-moveBy ( dx, dy ) fraction ( px, py ) =
-  ( px + fraction * dx, py + fraction * dy )
-
-
 makePerson : Float -> Tangram -> Model -> Model
 makePerson fraction tangram model =
   let
     bigTriangleS' =
-      modify tangram.bigTriangleS (0, 0.25) 0 fraction
+      modify tangram.bigTriangleS ( 0, 0.25 ) 0 fraction
 
     bigTriangleW' =
-      modify tangram.bigTriangleW (1, 0.25) -90 fraction
+      modify tangram.bigTriangleW ( 1, 0.25 ) -90 fraction
 
     mediumTriangle' =
-      modify tangram.mediumTriangle (0, -1.75) 0 fraction
+      modify tangram.mediumTriangle ( 0, -1.75 ) 0 fraction
 
     smTri1 =
       modify tangram.smallTriangleSE ( 0, -1.25 ) 45 fraction
 
     smTri2 =
-      modify tangram.smallTriangleN (-1.75, -1.5) -135 fraction
+      modify tangram.smallTriangleN ( -1.75, -1.5 ) -135 fraction
 
     square' =
-      modify tangram.square ( 0, 1.25 ) 0 fraction
+      modify tangram.square ( 0, 1.25 ) 360 fraction
 
     parallelogram' =
-      modify tangram.parallelogram (-0.7, -1.85) 45 fraction
+      modify tangram.parallelogram ( -0.7, -1.85 ) 45 fraction
 
     tangram' =
       { tangram
@@ -181,10 +177,13 @@ modify basePiece ( dx, dy ) dRotation fraction =
     ( px, py ) =
       basePiece.position
 
+    ease from to fraction =
+      Easing.ease Easing.easeInExpo Easing.float from to 1 fraction
+
     position' =
-      ( px + fraction * dx, py + fraction * dy )
+      ( ease px (px + dx) fraction, ease py (py + dy) fraction )
 
     rotation' =
-      basePiece.rotation + fraction * (degrees dRotation)
+      ease basePiece.rotation (basePiece.rotation + (degrees dRotation)) fraction
   in
     { basePiece | position = position', rotation = rotation' }
