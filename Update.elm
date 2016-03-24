@@ -49,13 +49,15 @@ update action model =
           let
             fraction =
               (time - startTime) / duration
+            whichAnimation =
+              makePerson
           in
             if fraction >= 1.0 then
-              ( { model | animation = AnimationIdle } |> makePerson 1 startTangram
+              ( { model | animation = AnimationIdle } |> whichAnimation 1 startTangram
               , Effects.none
               )
             else
-              ( model |> makePerson fraction startTangram
+              ( model |> whichAnimation fraction startTangram
               , Effects.tick Tick
               )
 
@@ -75,35 +77,20 @@ animate fraction startTangram model =
     square' =
       { square | rotation = startTangram.square.rotation + fraction * (degrees 90) }
 
-    medTri =
-      startTangram.mediumTriangle
+    mediumTriangle' =
+      movePieceOutBack ( travel, travel ) startTangram.mediumTriangle fraction
 
-    medTri' =
-      { medTri | position = moveOutBack ( travel, travel ) fraction medTri.position }
+    smallTriangleSE' =
+      movePieceOutBack ( travel, -travel ) startTangram.smallTriangleSE fraction
 
-    smTri =
-      startTangram.smallTriangleSE
+    bigTriangleS' =
+      movePieceOutBack ( -travel, -travel ) startTangram.bigTriangleS fraction
 
-    smTri' =
-      { smTri | position = moveOutBack ( travel, -travel ) fraction smTri.position }
+    parallelogram' =
+      movePieceOutBack ( -travel, travel ) startTangram.parallelogram fraction
 
-    bigTri =
-      startTangram.bigTriangleS
-
-    bigTri' =
-      { bigTri | position = moveOutBack ( -travel, -travel ) fraction bigTri.position }
-
-    par =
-      startTangram.parallelogram
-
-    par' =
-      { par | position = moveOutBack ( -travel, travel ) fraction par.position }
-
-    smTri2 =
-      startTangram.smallTriangleN
-
-    smTri2' =
-      { smTri2 | position = moveOutBack ( -travel, travel ) fraction smTri2.position }
+    smallTriangleN' =
+      movePieceOutBack ( -travel, travel ) startTangram.smallTriangleN fraction
 
     tangram =
       model.tangram
@@ -111,14 +98,22 @@ animate fraction startTangram model =
     tangram' =
       { tangram
         | square = square'
-        , mediumTriangle = medTri'
-        , smallTriangleSE = smTri'
-        , bigTriangleS = bigTri'
-        , parallelogram = par'
-        , smallTriangleN = smTri2'
+        , mediumTriangle = mediumTriangle'
+        , smallTriangleSE = smallTriangleSE'
+        , bigTriangleS = bigTriangleS'
+        , parallelogram = parallelogram'
+        , smallTriangleN = smallTriangleN'
       }
   in
     { model | tangram = tangram' }
+
+
+movePieceOutBack : ( Float, Float ) -> Piece -> Float -> Piece
+movePieceOutBack (dx, dy) piece fraction =                   
+  let
+    position' = moveOutBack (dx, dy) fraction piece.position
+  in
+    { piece | position = position' }
 
 
 moveOutBack : ( Float, Float ) -> Float -> ( Float, Float ) -> ( Float, Float )
