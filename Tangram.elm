@@ -3,7 +3,6 @@ module Main (..) where
 import Graphics.Element exposing (Element)
 import Window
 import Model exposing (Model, init)
-import Signal.Extra
 import View exposing (view)
 import Update exposing (..)
 import Task
