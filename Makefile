@@ -8,5 +8,5 @@ watch:
 	fswatch -l 0.2 $(SRC) | \
 	  while read f; do clear;  echo "$$f"; $(MAKE) build; done
 
-testbrowser:
+browse:
 	browser-sync start --server --files index.html --startPath index.html

@@ -5,10 +5,16 @@ import Colors exposing (..)
 import Time exposing (Time)
 
 
-type alias Position = (Float, Float)
+type alias Position =
+  ( Float, Float )
 
-type alias Rotation = Float
 
+type alias Rotation =
+  Float
+
+
+{-| Each Piece is one of the 7 tangram pieces.
+-}
 type alias Piece =
   { points : List Position
   , position : Position
@@ -18,6 +24,8 @@ type alias Piece =
   }
 
 
+{-| A Tangram comprises all 7 pieces.
+-}
 type alias Tangram =
   { bigTriangleS : Piece
   , bigTriangleW : Piece
@@ -42,7 +50,10 @@ type Animation
   | AnimationActive { duration : Time, startTime : Time, startTangram : Tangram }
 
 
-initTangram =
+{-| The elmTangram has the pieces in the canonical Elm square shape, centered
+at position 0,0 and having height and width of 2.
+-}
+elmTangram =
   Tangram
     (Piece trianglePoints ( 0, -0.5 ) 0 elmTurquoise 1)
     (Piece trianglePoints ( -0.5, 0 ) (degrees -90) elmGray 1)
@@ -53,25 +64,55 @@ initTangram =
     (Piece parallelogramPoints ( -0.25, 0.75 ) 0 elmGreen 1)
 
 
+addPosition : Position -> Position -> Position
+addPosition ( x1, y1 ) ( x2, y2 ) =
+  ( x1 + x2, y1 + y2 )
+
+
+movePiece : Position -> Rotation -> Piece -> Piece
+movePiece dPosition dRotation piece =
+  { piece
+    | position = addPosition piece.position dPosition
+    , rotation = piece.rotation + (degrees dRotation)
+  }
+
+
+runnerTangram =
+  { elmTangram
+    | bigTriangleS = elmTangram.bigTriangleS |> movePiece ( 0, 0.25 ) 0
+    , bigTriangleW = elmTangram.bigTriangleW |> movePiece ( 1, 0.25 ) -90
+    , mediumTriangle = elmTangram.mediumTriangle |> movePiece ( 0, -1.75 ) 0
+    , smallTriangleSE = elmTangram.smallTriangleSE |> movePiece ( -0.1, -1.25 ) 45
+    , smallTriangleN = elmTangram.smallTriangleN |> movePiece ( -1.8, -1.5 ) -135
+    , square = elmTangram.square |> movePiece ( 0, 1.25 ) 360
+    , parallelogram = elmTangram.parallelogram |> movePiece ( -0.7, -1.85 ) 45
+  }
+
+
 init : Model
 init =
   Model
     ( 200, 200 )
-    initTangram
+    runnerTangram
     AnimationIdle
 
 
-trianglePoints : List ( number, Float )
+{-| A right triangle with mid-point at (0,0), hypotenuse at bottom of unit length
+-}
+trianglePoints : List Position
 trianglePoints =
   [ ( 0, 0.5 ), ( -1, -0.5 ), ( 1, -0.5 ) ]
 
 
-squarePoints : List ( Float, Float )
+{-| A square centered at (0,0) with sides of unit length.
+-}
+squarePoints : List Position
 squarePoints =
-  [ ( 0.5, 0 ), ( 0, 0.5 ), ( -0.5, -0 ), ( 0, -0.5 ) ]
+  [ ( 0.5, 0 ), ( 0, 0.5 ), ( -0.5, 0 ), ( 0, -0.5 ) ]
 
 
-parallelogramPoints : List ( Float, Float )
+{-| The parallelogram, centered at (0,0) and having unit length on long sides.
+-}
+parallelogramPoints : List Position
 parallelogramPoints =
-  --[ ( 0, 1 ), ( -1, 1 ), ( -0.5, 0.5 ), ( 0.5, 0.5 ) ]
   [ ( 0.25, 0.25 ), ( -0.75, 0.25 ), ( -0.25, -0.25 ), ( 0.75, -0.25 ) ]
