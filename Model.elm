@@ -77,15 +77,17 @@ movePiece dPosition dRotation piece =
   }
 
 
+{-| Define the runner tangram shape relative to the base Elm tangram shape.
+-}
 runnerTangram =
   { elmTangram
     | bigTriangleS = elmTangram.bigTriangleS |> movePiece ( 0, 0.25 ) 0
     , bigTriangleW = elmTangram.bigTriangleW |> movePiece ( 1, 0.25 ) -90
     , mediumTriangle = elmTangram.mediumTriangle |> movePiece ( 0, -1.75 ) 0
     , smallTriangleSE = elmTangram.smallTriangleSE |> movePiece ( -0.1, -1.25 ) 45
-    , smallTriangleN = elmTangram.smallTriangleN |> movePiece ( -1.8, -1.5 ) -135
+    , smallTriangleN = elmTangram.smallTriangleN |> movePiece ( (1 - 2 * sqrt 2), -1.5 ) -135
     , square = elmTangram.square |> movePiece ( 0, 1.25 ) 360
-    , parallelogram = elmTangram.parallelogram |> movePiece ( -0.7, -1.85 ) 45
+    , parallelogram = elmTangram.parallelogram |> movePiece ( -(1 / sqrt 2), -1.86 ) 45
   }
 
 
@@ -93,7 +95,7 @@ init : Model
 init =
   Model
     ( 200, 200 )
-    runnerTangram
+    elmTangram
     AnimationIdle
 
 

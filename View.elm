@@ -8,6 +8,7 @@ import Graphics.Input exposing (clickable)
 import Model exposing (..)
 import Update exposing (Action(..))
 
+
 view : Signal.Address Action -> Model -> Element
 view address model =
   let
@@ -32,10 +33,9 @@ view address model =
 
 formFromPiece : Piece -> Form
 formFromPiece piece =
-  filledForm piece.color piece.points
+  filledForm piece.points piece.scale piece.color
     |> move piece.position
     |> rotate piece.rotation
-    |> scale piece.scale
 
 
 scalingFactor : ( Int, Int ) -> Float
@@ -43,31 +43,53 @@ scalingFactor ( width, height ) =
   (min (toFloat width) (toFloat height)) / 4
 
 
-filledForm : Color -> List ( Float, Float ) -> Form
-filledForm color points =
+{-| Create Form with given color, vertexes, and scale. We fake an inset by
+applying a path to the perimeter whose width is twice the desired inset. Note
+that for that inset to be the same for all pieces we have to scale the defining
+points *before* applying that path.
+-}
+filledForm : List ( Float, Float ) -> Float -> Color -> Form
+filledForm points scaleFactor color =
   let
     linestyle =
       { defaultLine
         | width = separation
-        , color = white
+        , color = Color.black
         , join = Graphics.Collage.Smooth
+        , cap = Graphics.Collage.Round
       }
 
-    -- Add first point to end of list so path forms a loop.
-    loopedPoints =
-      case List.head points of
-        Nothing ->
-          []
-
-        Just h ->
-          List.append points [ h ]
+    scaledPoints =
+      scalePoints scaleFactor points
   in
     group
-      [ polygon points |> filled color
-      , path loopedPoints |> traced linestyle
+      [ scaledPoints |> polygon |> filled color
+      , scaledPoints |> loopPoints |> path |> traced linestyle
       ]
 
 
 separation : Float
 separation =
   5.0e-2
+
+
+scalePoints : Float -> List Position -> List Position
+scalePoints scaleFactor pts =
+  case pts of
+    ( x, y ) :: tail ->
+      ( x * scaleFactor, y * scaleFactor ) :: scalePoints scaleFactor tail
+
+    [] ->
+      []
+
+
+{-| Add first point to end of list so path forms a closed loop.
+-}
+loopPoints : List Position -> List Position
+loopPoints pts =
+  case pts of
+    hd :: tail ->
+      List.append pts [ hd ]
+
+    [] ->
+      []
