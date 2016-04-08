@@ -1,6 +1,6 @@
 module Model (..) where
 
-import Color exposing (Color, rgb)
+import Color exposing (Color)
 import Colors exposing (..)
 import Time exposing (Time)
 

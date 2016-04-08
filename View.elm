@@ -54,7 +54,7 @@ filledForm points scaleFactor color =
     linestyle =
       { defaultLine
         | width = separation
-        , color = Color.black
+        , color = Color.rgb 64 64 64
         , join = Graphics.Collage.Smooth
         , cap = Graphics.Collage.Round
       }
