@@ -80,17 +80,17 @@ animate fraction startTangram model =
     mediumTriangle' =
       movePieceOutBack ( travel, travel ) startTangram.mediumTriangle fraction
 
-    smallTriangleSE' =
-      movePieceOutBack ( travel, -travel ) startTangram.smallTriangleSE fraction
+    smallTriangle1' =
+      movePieceOutBack ( travel, -travel ) startTangram.smallTriangle1 fraction
 
-    bigTriangleS' =
-      movePieceOutBack ( -travel, -travel ) startTangram.bigTriangleS fraction
+    bigTriangle1' =
+      movePieceOutBack ( -travel, -travel ) startTangram.bigTriangle1 fraction
 
     parallelogram' =
       movePieceOutBack ( -travel, travel ) startTangram.parallelogram fraction
 
-    smallTriangleN' =
-      movePieceOutBack ( -travel, travel ) startTangram.smallTriangleN fraction
+    smallTriangle2' =
+      movePieceOutBack ( -travel, travel ) startTangram.smallTriangle2 fraction
 
     tangram =
       model.tangram
@@ -99,10 +99,10 @@ animate fraction startTangram model =
       { tangram
         | square = square'
         , mediumTriangle = mediumTriangle'
-        , smallTriangleSE = smallTriangleSE'
-        , bigTriangleS = bigTriangleS'
+        , smallTriangle1 = smallTriangle1'
+        , bigTriangle1 = bigTriangle1'
         , parallelogram = parallelogram'
-        , smallTriangleN = smallTriangleN'
+        , smallTriangle2 = smallTriangle2'
       }
   in
     { model | tangram = tangram' }
@@ -131,20 +131,20 @@ moveOutBack ( dx, dy ) fraction ( px, py ) =
 makePerson : Float -> Tangram -> Model -> Model
 makePerson fraction tangram model =
   let
-    bigTriangleS' =
-      modify tangram.bigTriangleS ( 0, 0.25 ) 0 fraction
+    bigTriangle1' =
+      modify tangram.bigTriangle1 ( 0, 0.25 ) 0 fraction
 
-    bigTriangleW' =
-      modify tangram.bigTriangleW ( 1, 0.25 ) -90 fraction
+    bigTriangle2' =
+      modify tangram.bigTriangle2 ( 1, 0.25 ) -90 fraction
 
     mediumTriangle' =
       modify tangram.mediumTriangle ( 0, -1.75 ) 0 fraction
 
     smTri1 =
-      modify tangram.smallTriangleSE ( 0, -1.25 ) 45 fraction
+      modify tangram.smallTriangle1 ( 0, -1.25 ) 45 fraction
 
     smTri2 =
-      modify tangram.smallTriangleN ( -1.75, -1.5 ) -135 fraction
+      modify tangram.smallTriangle2 ( -1.75, -1.5 ) -135 fraction
 
     square' =
       modify tangram.square ( 0, 1.25 ) 360 fraction
@@ -154,13 +154,13 @@ makePerson fraction tangram model =
 
     tangram' =
       { tangram
-        | smallTriangleSE = smTri1
-        , smallTriangleN = smTri2
+        | smallTriangle1 = smTri1
+        , smallTriangle2 = smTri2
         , square = square'
         , mediumTriangle = mediumTriangle'
         , parallelogram = parallelogram'
-        , bigTriangleS = bigTriangleS'
-        , bigTriangleW = bigTriangleW'
+        , bigTriangle1 = bigTriangle1'
+        , bigTriangle2 = bigTriangle2'
       }
   in
     { model | tangram = tangram' }

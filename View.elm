@@ -14,11 +14,11 @@ view address model =
   let
     form =
       group
-        [ formFromPiece model.tangram.bigTriangleS
-        , formFromPiece model.tangram.bigTriangleW
+        [ formFromPiece model.tangram.bigTriangle1
+        , formFromPiece model.tangram.bigTriangle2
         , formFromPiece model.tangram.mediumTriangle
-        , formFromPiece model.tangram.smallTriangleSE
-        , formFromPiece model.tangram.smallTriangleN
+        , formFromPiece model.tangram.smallTriangle1
+        , formFromPiece model.tangram.smallTriangle2
         , formFromPiece model.tangram.parallelogram
         , formFromPiece model.tangram.square
         ]

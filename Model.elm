@@ -27,11 +27,11 @@ type alias Piece =
 {-| A Tangram comprises all 7 pieces.
 -}
 type alias Tangram =
-  { bigTriangleS : Piece
-  , bigTriangleW : Piece
+  { bigTriangle1 : Piece
+  , bigTriangle2 : Piece
   , mediumTriangle : Piece
-  , smallTriangleSE : Piece
-  , smallTriangleN : Piece
+  , smallTriangle1 : Piece
+  , smallTriangle2 : Piece
   , square : Piece
   , parallelogram : Piece
   }
@@ -81,11 +81,11 @@ movePiece dPosition dRotation piece =
 -}
 runnerTangram =
   { elmTangram
-    | bigTriangleS = elmTangram.bigTriangleS |> movePiece ( 0, 0.25 ) 0
-    , bigTriangleW = elmTangram.bigTriangleW |> movePiece ( 1, 0.25 ) -90
+    | bigTriangle1 = elmTangram.bigTriangle1 |> movePiece ( 0, 0.25 ) 0
+    , bigTriangle2 = elmTangram.bigTriangle2 |> movePiece ( 1, 0.25 ) -90
     , mediumTriangle = elmTangram.mediumTriangle |> movePiece ( 0, -1.75 ) 0
-    , smallTriangleSE = elmTangram.smallTriangleSE |> movePiece ( -0.1, -1.25 ) 45
-    , smallTriangleN = elmTangram.smallTriangleN |> movePiece ( (1 - 2 * sqrt 2), -1.5 ) -135
+    , smallTriangle1 = elmTangram.smallTriangle1 |> movePiece ( -0.1, -1.25 ) 45
+    , smallTriangle2 = elmTangram.smallTriangle2 |> movePiece ( (1 - 2 * sqrt 2), -1.5 ) -135
     , square = elmTangram.square |> movePiece ( 0, 1.25 ) 360
     , parallelogram = elmTangram.parallelogram |> movePiece ( -(1 / sqrt 2), -1.86 ) 45
   }
