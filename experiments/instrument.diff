@@ -1,0 +1,104 @@
+--- elm.js	2016-04-12 12:27:23.000000000 -0500
++++ elm-instrumented.js	2016-04-12 12:27:02.000000000 -0500
+@@ -423,6 +423,7 @@
+ 			var rootNode = { kids: inputs };
+ 			trimDeadNodes(rootNode);
+ 			inputs = rootNode.kids;
++		    printGraph(inputs);
+ 			filterListeners(inputs, listeners);
+ 
+ 			addReceivers(elm.ports);
+@@ -4605,6 +4606,7 @@
+ 
+ 		node.notify = function(timestamp, targetId, value) {
+ 			var update = targetId === node.id;
++                    report(timestamp, node, 0, update, "");
+ 			if (update)
+ 			{
+ 				node.value = value;
+@@ -4667,6 +4669,7 @@
+ 
+ 		node.notify = function(timestamp, parentUpdate, parentID)
+ 		{
++                    report(timestamp, node, parentID, parentUpdate, parent.value);
+ 			if (parentUpdate)
+ 			{
+ 				handler(parent.value);
+@@ -4701,6 +4704,8 @@
+ 
+ 			update = update || parentUpdate;
+ 
++                    report(timestamp, node, parentID, parentUpdate, { count: count });
++
+ 			if (count === numberOfParents)
+ 			{
+ 				if (update)
+@@ -4786,6 +4791,7 @@
+ 
+ 		node.notify = function(timestamp, parentUpdate, parentID)
+ 		{
++                    report(timestamp, node, parentID, parentUpdate, {});
+ 			if (parentUpdate)
+ 			{
+ 				node.value = A2( update, signal.value, node.value );
+@@ -4812,7 +4818,8 @@
+ 		};
+ 
+ 		node.notify = function(timestamp, parentUpdate, parentID)
+-		{
++	    {
++                console.log("timestamp:notify", timestamp, node.id, node.name, parentUpdate, parentID);
+ 			if (parentUpdate)
+ 			{
+ 				node.value = Utils.Tuple2(timestamp, signal.value);
+@@ -4859,7 +4866,8 @@
+ 		var right = { touched: false, update: false, value: null };
+ 
+ 		node.notify = function(timestamp, parentUpdate, parentID)
+-		{
++	    {
++                report(timestamp, node, parentID, parentUpdate, { left: leftStream, right: rightStream });
+ 			if (parentID === leftStream.id)
+ 			{
+ 				left.touched = true;
+@@ -4957,6 +4965,7 @@
+ 
+ 		node.notify = function(timestamp, parentUpdate, parentID)
+ 		{
++                    report(timestamp, node, parentID, parentUpdate, { ticker: ticker, signal: signal });
+ 			if (parentID === ticker.id)
+ 			{
+ 				tickerTouch = true;
+@@ -6855,3 +6864,32 @@
+                              ,firstResize: firstResize
+                              ,sendInitial: sendInitial};
+ };
++function printGraph(queue)
++{
++    queue = queue.slice(0);
++
++    console.log('digraph { //');
++    var seen = [];
++    while (queue.length > 0)
++    {
++	var node = queue.pop();
++	var id = node.id;
++	if (seen.indexOf(id) < 0)
++	{
++	    console.log('%d [label="%d: %s"]; //', id, id, node.name);
++	    var kids = node.kids || [];
++	    for (var i = kids.length; i--; )
++	    {
++		console.log('%d -> %d', id, kids[i].id, '; //');
++	    }
++	    queue = queue.concat(kids);
++	    seen.push(id);
++	}
++    }
++    console.log('} //');
++}
++
++function report(timestamp, node, notifParent, update, other) {
++    console.log("%d %2d:%20s %d->%5s", timestamp, node.id, node.name, notifParent, update, other);
++}
++
